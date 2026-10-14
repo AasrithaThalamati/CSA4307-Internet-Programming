@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Campus Library | Library Management System</title>
+<style>
+:root {
+  --navy: #17324d;
+  --navy-dark: #10263b;
+  --blue: #315f83;
+  --blue-light: #eaf1f6;
+  --paper: #ffffff;
+  --page: #f5f7f9;
+  --ink: #243443;
+  --muted: #6e7d89;
+  --line: #e0e6eb;
+  --green: #26734d;
+  --green-bg: #e9f5ee;
+  --amber: #95651b;
+  --amber-bg: #fbf2df;
+  --red: #a43d3d;
+  --red-bg: #f9eaea;
+  --radius: 12px;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: "Segoe UI", Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+}
+button, input, select { font: inherit; }
+button { cursor: pointer; }
+a { color: var(--blue); }
+.topbar {
+  background: var(--navy);
+  color: white;
+  padding: 19px max(24px, calc((100% - 1160px) / 2));
+  display: flex; align-items: center; justify-content: space-between; gap: 18px;
+}
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand-mark {
+  width: 42px; height: 42px; border: 1px solid #7890a4; border-radius: 9px;
+  display: grid; place-items: center; font-size: 21px;
+}
+.brand-name { font-size: 20px; font-weight: 650; letter-spacing: .2px; }
+.brand-subtitle { color: #c5d2dc; font-size: 12px; margin-top: 1px; }
+.account-label { color: #d9e3ea; font-size: 13px; text-align: right; }
+.nav-wrap { background: #fff; border-bottom: 1px solid var(--line); }
+nav {
+  max-width: 1160px; margin: auto; padding: 0 24px;
+  display: flex; gap: 3px; flex-wrap: wrap;
+}
+nav button {
+  border: 0; background: transparent; color: #526371; padding: 15px 13px;
+  border-bottom: 3px solid transparent; font-size: 13px;
+}
+nav button:hover, nav button.active { color: var(--navy); border-bottom-color: var(--blue); }
+main { max-width: 1160px; margin: 30px auto 54px; padding: 0 24px; min-height: 60vh; }
+.page { display: none; }
+.page.active { display: block; }
+.page-heading { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin-bottom: 22px; }
+.eyebrow { color: var(--blue); font-size: 11px; font-weight: 700; letter-spacing: 1.25px; text-transform: uppercase; }
+h1,h2,h3,p { margin-top: 0; }
+h1 { font-size: clamp(27px, 3vw, 36px); line-height: 1.2; letter-spacing: -.6px; margin: 5px 0 8px; font-weight: 650; }
+h2 { font-size: 22px; font-weight: 650; margin-bottom: 5px; }
+h3 { font-size: 16px; font-weight: 650; margin-bottom: 5px; }
+.subtitle { color: var(--muted); margin: 0; }
+.hero {
+  background: var(--navy); color: #fff; border-radius: 15px; padding: 37px;
+  display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 24px;
+}
+.hero .eyebrow { color: #c6d8e5; }
+.hero p { max-width: 620px; color: #d5e0e8; margin: 0 0 22px; }
+.hero h1 { max-width: 590px; }
+.hero-graphic {
+  width: 130px; height: 130px; border: 1px solid #5c768b; border-radius: 50%;
+  display: grid; place-items: center; color: #d7e4ec; font-size: 54px;
+  background: #23435f;
+}
+.btn {
+  border: 1px solid transparent; border-radius: 7px; padding: 10px 14px;
+  font-size: 13px; font-weight: 600; display: inline-flex; align-items: center;
+  justify-content: center; gap: 7px; text-decoration: none;
+}
+.btn-primary { background: var(--blue); color: white; }
+.btn-primary:hover { background: #254b69; }
+.btn-light { background: #fff; color: var(--navy); }
+.btn-outline { background: #fff; border-color: #ccd6de; color: #435667; }
+.btn-danger { background: var(--red-bg); color: var(--red); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin: 20px 0 30px; }
+.stat {
+  background: white; border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 19px 20px;
+}
+.stat-label { color: var(--muted); font-size: 12px; }
+.stat-value { font-size: 27px; font-weight: 650; color: var(--navy); margin-top: 6px; }
+.stat-foot { font-size: 11px; color: #83909a; margin-top: 2px; }
+.section-head { display: flex; justify-content: space-between; align-items: center; gap: 14px; margin: 29px 0 14px; }
+.book-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+.book-card { background: #fff; border: 1px solid var(--line); border-radius: 11px; overflow: hidden; }
+.book-art {
+  height: 112px; display: grid; place-items: center; background: #e8eef3;
+  color: var(--navy); font-size: 42px; border-bottom: 1px solid var(--line);
+}
+.book-card:nth-child(4n+2) .book-art { background: #f0eee7; }
+.book-card:nth-child(4n+3) .book-art { background: #e8f0eb; }
+.book-card:nth-child(4n+4) .book-art { background: #f4eae7; }
+.book-details { padding: 15px; }
+.book-title { min-height: 42px; font-size: 15px; line-height: 1.35; font-weight: 650; }
+.book-author { color: var(--muted); font-size: 12px; margin: 5px 0 11px; }
+.book-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 13px; }
+.pill { display: inline-block; padding: 4px 8px; border-radius: 20px; font-size: 11px; background: var(--green-bg); color: var(--green); white-space: nowrap; }
+.pill.out { background: var(--red-bg); color: var(--red); }
+.pill.neutral { background: var(--blue-light); color: var(--blue); }
+.book-details .btn { width: 100%; }
+.card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 23px; margin-bottom: 18px; }
+.card-title { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 18px; }
+.toolbar { display: flex; gap: 10px; margin-bottom: 18px; }
+.toolbar input { flex: 1; }
+input, select {
+  width: 100%; border: 1px solid #ccd6de; border-radius: 7px; background: #fff;
+  padding: 10px 11px; color: var(--ink); outline: none;
+}
+input:focus, select:focus { border-color: var(--blue); box-shadow: 0 0 0 3px #315f8314; }
+.form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.field label { display: block; color: #536371; font-size: 12px; font-weight: 650; margin-bottom: 6px; }
+.actions { display: flex; gap: 9px; flex-wrap: wrap; margin-top: 18px; }
+table { border-collapse: collapse; width: 100%; min-width: 610px; }
+.table-wrap { overflow-x: auto; }
+th,td { text-align: left; border-bottom: 1px solid var(--line); padding: 12px 13px; font-size: 13px; vertical-align: middle; }
+th { background: #f7f9fa; color: #60707c; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
+tr:last-child td { border-bottom: 0; }
+.empty { text-align: center; padding: 35px 15px; color: var(--muted); }
+.empty strong { display: block; color: var(--ink); margin-bottom: 5px; }
+.notice { background: #edf3f7; border-left: 3px solid var(--blue); color: #405b70; padding: 12px 15px; font-size: 12px; border-radius: 4px; margin-bottom: 18px; }
+.profile-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.profile-item { padding: 14px 0; border-bottom: 1px solid var(--line); }
+.profile-item span { display: block; color: var(--muted); font-size: 12px; margin-bottom: 4px; }
+.profile-item strong { font-size: 14px; font-weight: 600; overflow-wrap: anywhere; }
+footer { background: #fff; border-top: 1px solid var(--line); color: #77848e; padding: 20px 24px; text-align: center; font-size: 12px; }
+@media (max-width: 900px) {
+  .book-grid { grid-template-columns: repeat(2, 1fr); }
+  .stats { grid-template-columns: repeat(2, 1fr); }
+  .hero-graphic { width: 100px; height: 100px; font-size: 42px; }
+}
+@media (max-width: 600px) {
+  .topbar { padding: 15px 18px; }
+  nav { padding: 0 12px; }
+  nav button { padding: 12px 9px; font-size: 12px; }
+  main { padding: 0 15px; margin-top: 20px; }
+  .hero { padding: 25px; grid-template-columns: 1fr; }
+  .hero-graphic { display: none; }
+  .book-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .book-details { padding: 11px; }
+  .book-title { font-size: 13px; }
+  .book-art { height: 88px; font-size: 34px; }
+  .form-grid, .profile-grid { grid-template-columns: 1fr; }
+  .card { padding: 17px; }
+}
+@media (max-width: 380px) { .book-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-mark">▤</div>
+    <div>
+      <div class="brand-name">Campus Library</div>
+      <div class="brand-subtitle">Library Management System</div>
+    </div>
+  </div>
+  <div class="account-area">
+    
+    <button id="signInBtn" class="btn btn-light"
+            onclick="showPage('login')">Sign In</button>
+    <button id="signOutBtn" class="btn btn-light"
+            onclick="logout()" style="display:none;">Sign Out</button>
+</div>
+</header>
+<div class="nav-wrap">
+  <nav aria-label="Main navigation">
+    <button class="active" data-page="home" onclick="showPage('home')">Overview</button>
+    <button data-page="catalog" onclick="showPage('catalog')">Book catalogue</button>
+    <button data-page="history" onclick="showPage('history')">Borrow history</button>
+    <button data-page="materials" onclick="showPage('materials')">Study materials</button>
+    <button data-page="profile" onclick="showPage('profile')">My profile</button>
+    <button data-page="login" onclick="showPage('login')">Account</button>
+    <button data-page="admin" onclick="showPage('admin')">Librarian desk</button>
+  </nav>
+</div>
+<main>
+<section id="home" class="page active">
+  <div class="hero">
+    <div>
+      <div class="eyebrow">A place to learn</div>
+      <h1>Knowledge begins<br>with a good book.</h1>
+      <p>Find books for your coursework, keep track of borrowed titles and access study resources through one simple library portal.</p>
+      <button class="btn btn-light" onclick="showPage('catalog')">Browse the catalogue&nbsp; →</button>
+    </div>
+    <div class="hero-graphic" aria-hidden="true">▤</div>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="stat-label">Total book copies</div><div class="stat-value" id="totalBooks">0</div><div class="stat-foot">Across all catalogue titles</div></div>
+    <div class="stat"><div class="stat-label">Available copies</div><div class="stat-value" id="availableBooks">0</div><div class="stat-foot">Ready to borrow</div></div>
+    <div class="stat"><div class="stat-label">Books on loan</div><div class="stat-value" id="issuedBooks">0</div><div class="stat-foot">Currently issued</div></div>
+    <div class="stat"><div class="stat-label">My outstanding fine</div><div class="stat-value" id="totalFine">₹0</div><div class="stat-foot">Calculated at ₹5 per overdue day</div></div>
+  </div>
+  <div class="section-head">
+    <div><h2>From the catalogue</h2><p class="subtitle">A selection of titles available in the library.</p></div>
+    <button class="btn btn-outline" onclick="showPage('catalog')">View all titles</button>
+  </div>
+  <div class="book-grid" id="featuredBooks"></div>
+</section>
+
+<section id="catalog" class="page">
+  <div class="page-heading"><div><div class="eyebrow">Collection</div><h1>Book catalogue</h1><p class="subtitle">Search the collection by title, author or subject.</p></div></div>
+  <div class="toolbar">
+    <input id="searchInput" aria-label="Search books" placeholder="Search title, author or subject…" oninput="renderCatalog()">
+    <select id="categoryFilter" aria-label="Filter by category" onchange="renderCatalog()" style="max-width:210px">
+      <option value="">All subjects</option><option>Programming</option><option>Database</option><option>Science</option><option>Literature</option><option>Mathematics</option>
+    </select>
+  </div>
+  <div class="book-grid" id="catalogBooks"></div>
+</section>
+
+<section id="history" class="page">
+  <div class="page-heading"><div><div class="eyebrow">Your account</div><h1>Borrow history</h1><p class="subtitle">Review issue dates, due dates and any outstanding fines.</p></div></div>
+  <div class="card"><div id="historyContent"></div></div>
+</section>
+
+<section id="materials" class="page">
+  <div class="page-heading"><div><div class="eyebrow">Learning resources</div><h1>Study materials</h1><p class="subtitle">Browse resources by academic year and semester.</p></div></div>
+  <div class="card">
+    <div class="form-grid">
+      <div class="field"><label for="yearFilter">Academic year</label><select id="yearFilter" onchange="renderMaterials()"><option value="">All years</option><option>First Year</option><option>Second Year</option><option>Third Year</option><option>Fourth Year</option></select></div>
+      <div class="field"><label for="semesterFilter">Semester</label><select id="semesterFilter" onchange="renderMaterials()"><option value="">All semesters</option><option>Semester 1</option><option>Semester 2</option><option>Semester 3</option><option>Semester 4</option><option>Semester 5</option><option>Semester 6</option><option>Semester 7</option><option>Semester 8</option></select></div>
+    </div>
+    <div id="materialList" style="margin-top:20px"></div>
+  </div>
+</section>
+
+<section id="profile" class="page">
+  <div class="page-heading"><div><div class="eyebrow">Personal details</div><h1>My profile</h1><p class="subtitle">Your library account and current borrowing activity.</p></div></div>
+  <div class="card"><div id="profileContent"></div></div>
+</section>
+
+<section id="login" class="page">
+  <div class="page-heading"><div><div class="eyebrow">Member access</div><h1>Account</h1><p class="subtitle">Create a student account or sign in to access borrowing features.</p></div></div>
+  <div class="notice">Demonstration only: accounts are stored in this browser. Do not enter a real password or sensitive personal information.</div>
+  <div class="card">
+    <div class="card-title"><div><h2>Student registration</h2><p class="subtitle">Create an account for this demonstration.</p></div></div>
+    <form id="registerForm">
+      <div class="form-grid">
+        <div class="field"><label for="regName">Full name</label><input id="regName" required autocomplete="name" placeholder="Enter full name"></div>
+        <div class="field"><label for="regEmail">Email address</label><input id="regEmail" type="email" required autocomplete="email" placeholder="student@example.com"></div>
+        <div class="field"><label for="regId">Student ID</label><input id="regId" required placeholder="e.g. 23CSE001"></div>
+        <div class="field"><label for="regPassword">Password</label><input id="regPassword" type="password" minlength="4" required autocomplete="new-password" placeholder="At least 4 characters"></div>
+      </div>
+      <div class="actions"><button class="btn btn-primary" type="submit">Create account</button></div>
+    </form>
+  </div>
+  <div class="card">
+    <div class="card-title"><div><h2>Student login</h2><p class="subtitle">Sign in using the account registered in this browser.</p></div></div>
+    <form id="loginForm">
+      <div class="form-grid">
+        <div class="field"><label for="loginEmail">Email address</label><input id="loginEmail" type="email" required autocomplete="username"></div>
+        <div class="field"><label for="loginPassword">Password</label><input id="loginPassword" type="password" required autocomplete="current-password"></div>
+      </div>
+      <div class="actions"><button class="btn btn-primary" type="submit">Sign in</button><button class="btn btn-outline" type="button" onclick="demoLogin()">Use demo student</button><button class="btn btn-outline" type="button" onclick="logout()">Sign out</button></div>
+    </form>
+  </div>
+</section>
+
+<section id="admin" class="page">
+  <div class="page-heading"><div><div class="eyebrow">Staff tools</div><h1>Librarian desk</h1><p class="subtitle">Maintain the catalogue, record book issues and manage learning resources.</p></div></div>
+  <div class="notice">For this HTML/CSS/JavaScript lab version, librarian tools are a demonstration and are not protected by staff authentication.</div>
+  <div class="card">
+    <div class="card-title"><div><h2>Add a catalogue title</h2><p class="subtitle">Enter the book details and number of copies.</p></div></div>
+    <form id="bookForm">
+      <div class="form-grid">
+        <div class="field"><label for="bookTitle">Book title</label><input id="bookTitle" required></div>
+        <div class="field"><label for="bookAuthor">Author</label><input id="bookAuthor" required></div>
+        <div class="field"><label for="bookCategory">Subject</label><select id="bookCategory" required><option value="">Choose a subject</option><option>Programming</option><option>Database</option><option>Science</option><option>Literature</option><option>Mathematics</option></select></div>
+        <div class="field"><label for="bookCopies">Number of copies</label><input id="bookCopies" type="number" min="1" value="1" required></div>
+      </div>
+      <div class="actions"><button class="btn btn-primary" type="submit">Add title</button></div>
+    </form>
+  </div>
+  <div class="card"><div class="card-title"><div><h2>Catalogue inventory</h2><p class="subtitle">Edit book details or remove a title from the collection.</p></div></div><div id="adminBookList"></div></div>
+  <div class="card">
+    <div class="card-title"><div><h2>Issue a book</h2><p class="subtitle">Record a loan for a registered student.</p></div></div>
+    <form id="issueForm">
+      <div class="form-grid">
+        <div class="field"><label for="issueEmail">Student email</label><input id="issueEmail" type="email" required></div>
+        <div class="field"><label for="issueBook">Available title</label><select id="issueBook" required></select></div>
+      </div>
+      <div class="actions"><button class="btn btn-primary" type="submit">Record issue</button></div>
+    </form>
+  </div>
+  <div class="card"><div class="card-title"><div><h2>Active loans</h2><p class="subtitle">Record returns and review calculated fines.</p></div></div><div id="adminIssueList"></div></div>
+  <div class="card">
+    <div class="card-title"><div><h2>Add study material</h2><p class="subtitle">Add a resource and associate it with a year and semester.</p></div></div>
+    <form id="materialForm">
+      <div class="form-grid">
+        <div class="field"><label for="materialTitle">Resource title</label><input id="materialTitle" required></div>
+        <div class="field"><label for="materialYear">Academic year</label><select id="materialYear"><option>First Year</option><option>Second Year</option><option>Third Year</option><option>Fourth Year</option></select></div>
+        <div class="field"><label for="materialSemester">Semester</label><select id="materialSemester"><option>Semester 1</option><option>Semester 2</option><option>Semester 3</option><option>Semester 4</option><option>Semester 5</option><option>Semester 6</option><option>Semester 7</option><option>Semester 8</option></select></div>
+        <div class="field"><label for="materialUrl">Resource link (optional)</label><input id="materialUrl" type="url" placeholder="https://example.com/notes.pdf"></div>
+      </div>
+      <div class="actions"><button class="btn btn-primary" type="submit">Add resource</button></div>
+    </form>
+  </div>
+  <div class="card"><div class="card-title"><div><h2>Registered students</h2><p class="subtitle">Student accounts created in this browser.</p></div></div><div id="studentList"></div></div>
+</section>
+</main>
+<footer>Campus Library · Internet Programming Lab · Front-end demonstration</footer>
+
+<script>
+const starterBooks = [
+  {id:1,title:"The Complete Java Guide",author:"Herbert Schildt",category:"Programming",total:4,available:4,icon:"▤"},
+  {id:2,title:"Python for Everybody",author:"Charles Severance",category:"Programming",total:3,available:3,icon:"⌘"},
+  {id:3,title:"Database System Concepts",author:"Abraham Silberschatz",category:"Database",total:3,available:3,icon:"▥"},
+  {id:4,title:"Introduction to Algorithms",author:"Thomas H. Cormen",category:"Mathematics",total:2,available:2,icon:"∑"},
+  {id:5,title:"A Brief History of Time",author:"Stephen Hawking",category:"Science",total:3,available:3,icon:"◉"},
+  {id:6,title:"Pride and Prejudice",author:"Jane Austen",category:"Literature",total:2,available:2,icon:"¶"},
+  {id:7,title:"Clean Code",author:"Robert C. Martin",category:"Programming",total:3,available:3,icon:"⌘"},
+  {id:8,title:"Fundamentals of SQL",author:"John J. Patrick",category:"Database",total:2,available:2,icon:"▥"}
+];
+const starterMaterials = [
+  {id:1,title:"Introduction to Programming — Notes",year:"First Year",semester:"Semester 1",url:""},
+  {id:2,title:"Database Management Systems — Notes",year:"Second Year",semester:"Semester 3",url:""},
+  {id:3,title:"Computer Networks — Notes",year:"Third Year",semester:"Semester 5",url:""},
+  {id:4,title:"Software Engineering — Notes",year:"Third Year",semester:"Semester 6",url:""}
+];
+function load(key, fallback) {
+  try { const value = localStorage.getItem(key); return value ? JSON.parse(value) : fallback; }
+  catch { return fallback; }
+}
+let books = load("campus_books", starterBooks);
+let users = load("campus_users", []);
+let loans = load("campus_loans", []);
+let materials = load("campus_materials", starterMaterials);
+let currentUser = null;
+try { currentUser = JSON.parse(sessionStorage.getItem("campus_user")) || null; } catch {}
+function save() {
+  localStorage.setItem("campus_books", JSON.stringify(books));
+  localStorage.setItem("campus_users", JSON.stringify(users));
+  localStorage.setItem("campus_loans", JSON.stringify(loans));
+  localStorage.setItem("campus_materials", JSON.stringify(materials));
+  sessionStorage.setItem("campus_user", JSON.stringify(currentUser));
+}
+function safe(v) {
+  return String(v).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+function showPage(id) {
+  document.querySelectorAll(".page").forEach(p => p.classList.toggle("active", p.id === id));
+  document.querySelectorAll("nav button").forEach(b => b.classList.toggle("active", b.dataset.page === id));
+  if (id === "home") renderHome();
+  if (id === "catalog") renderCatalog();
+  if (id === "history") renderHistory();
+  if (id === "profile") renderProfile();
+  if (id === "materials") renderMaterials();
+  if (id === "admin") renderAdmin();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function fine(loan) {
+  if (loan.returned) return 0;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const due = new Date(loan.due + "T00:00:00"); due.setHours(0,0,0,0);
+  return Math.max(0, Math.floor((today-due)/86400000)) * 5;
+}
+function renderHome() {
+  document.getElementById("totalBooks").textContent = books.reduce((n,b)=>n+b.total,0);
+  document.getElementById("availableBooks").textContent = books.reduce((n,b)=>n+b.available,0);
+  document.getElementById("issuedBooks").textContent = loans.filter(l=>!l.returned).length;
+  document.getElementById("totalFine").textContent = "₹" + (currentUser ? loans.filter(l=>l.email===currentUser.email).reduce((n,l)=>n+fine(l),0) : 0);
+  document.getElementById("featuredBooks").innerHTML = books.slice(0,4).map(bookCard).join("") || empty("No titles have been added yet.");
+  updateUser();
+}
+function bookCard(b) {
+  return `<article class="book-card"><div class="book-art" aria-hidden="true">${safe(b.icon||"▤")}</div><div class="book-details">
+    <div class="book-title">${safe(b.title)}</div><div class="book-author">${safe(b.author)} · ${safe(b.category)}</div>
+    <div class="book-meta"><span class="pill ${b.available===0?"out":""}">${b.available===0?"Unavailable":b.available+" available"}</span></div>
+    <button class="btn btn-primary" onclick="borrowBook(${b.id})" ${b.available===0?"disabled":""}>Request to borrow</button>
+  </div></article>`;
+}
+function renderCatalog() {
+  const q = document.getElementById("searchInput").value.toLowerCase().trim();
+  const cat = document.getElementById("categoryFilter").value;
+  const found = books.filter(b => [b.title,b.author,b.category].some(v=>v.toLowerCase().includes(q)) && (!cat||b.category===cat));
+  document.getElementById("catalogBooks").innerHTML = found.map(bookCard).join("") || empty("No matching titles","Try another search or subject.");
+}
+function empty(title, detail="") { return `<div class="empty"><strong>${safe(title)}</strong>${safe(detail)}</div>`; }
+function borrowBook(id) {
+  if (!currentUser) { alert("Please sign in before borrowing a book."); showPage("login"); return; }
+  const b = books.find(x=>x.id===id);
+  if (!b || b.available<1) { alert("This title is not currently available."); return; }
+  if (loans.filter(l=>l.email===currentUser.email&&!l.returned).length>=3) { alert("A maximum of three active loans is allowed."); return; }
+  if (!confirm(`Record a 14-day loan for “${b.title}”?`)) return;
+  const issue = new Date(), due = new Date(); due.setDate(due.getDate()+14);
+  loans.push({id:Date.now(),bookId:b.id,title:b.title,email:currentUser.email,issue:issue.toISOString().slice(0,10),due:due.toISOString().slice(0,10),returned:false});
+  b.available--; save(); renderHome(); renderCatalog();
+  alert("Loan recorded. Due date: "+due.toLocaleDateString());
+}
+function renderHistory() {
+  const el = document.getElementById("historyContent");
+  if (!currentUser) { el.innerHTML=empty("Sign in to view your history."); return; }
+  const mine=loans.filter(l=>l.email===currentUser.email);
+  if (!mine.length) { el.innerHTML=empty("No borrowing history yet","Borrow a title from the catalogue to see it here."); return; }
+  el.innerHTML=`<div class="table-wrap"><table><thead><tr><th>Title</th><th>Issue date</th><th>Due date</th><th>Status</th><th>Fine</th></tr></thead><tbody>${mine.map(l=>`<tr><td>${safe(l.title)}</td><td>${l.issue}</td><td>${l.due}</td><td><span class="pill ${l.returned?"neutral":""}">${l.returned?"Returned":"On loan"}</span></td><td>₹${fine(l)}</td></tr>`).join("")}</tbody></table></div><p class="subtitle" style="margin-top:14px;font-size:12px">Overdue fine is calculated at ₹5 per day for active loans.</p>`;
+}
+function renderProfile() {
+  const el=document.getElementById("profileContent");
+  if (!currentUser) { el.innerHTML=empty("No active session","Sign in or register to view your account details."); return; }
+  el.innerHTML=`<div class="profile-grid">
+    <div class="profile-item"><span>Full name</span><strong>${safe(currentUser.name)}</strong></div>
+    <div class="profile-item"><span>Email address</span><strong>${safe(currentUser.email)}</strong></div>
+    <div class="profile-item"><span>Student ID</span><strong>${safe(currentUser.studentId)}</strong></div>
+    <div class="profile-item"><span>Active loans</span><strong>${loans.filter(l=>l.email===currentUser.email&&!l.returned).length}</strong></div>
+  </div><div class="actions"><button class="btn btn-primary" onclick="showPage('history')">View borrow history</button><button class="btn btn-outline" onclick="logout()">Sign out</button></div>`;
+}
+function renderMaterials() {
+  const year=document.getElementById("yearFilter").value, sem=document.getElementById("semesterFilter").value;
+  const list=materials.filter(m=>(!year||m.year===year)&&(!sem||m.semester===sem));
+  document.getElementById("materialList").innerHTML=list.length?`<div class="table-wrap"><table><thead><tr><th>Resource</th><th>Academic year</th><th>Semester</th><th>Link</th></tr></thead><tbody>${list.map(m=>`<tr><td>${safe(m.title)}</td><td>${safe(m.year)}</td><td>${safe(m.semester)}</td><td>${m.url?`<a href="${safe(m.url)}" target="_blank" rel="noopener noreferrer">Open resource</a>`:"Not linked"}</td></tr>`).join("")}</tbody></table></div>`:empty("No resources found","Try a different year or semester.");
+}
+function renderAdmin() {
+  document.getElementById("adminBookList").innerHTML=books.length?`<div class="table-wrap"><table><thead><tr><th>Title</th><th>Author</th><th>Copies</th><th>Available</th><th>Actions</th></tr></thead><tbody>${books.map(b=>`<tr><td>${safe(b.title)}</td><td>${safe(b.author)}</td><td>${b.total}</td><td>${b.available}</td><td><button class="btn btn-outline" onclick="editBook(${b.id})">Edit</button> <button class="btn btn-danger" onclick="deleteBook(${b.id})">Delete</button></td></tr>`).join("")}</tbody></table></div>`:empty("Catalogue is empty");
+  const active=loans.filter(l=>!l.returned);
+  document.getElementById("adminIssueList").innerHTML=active.length?`<div class="table-wrap"><table><thead><tr><th>Student email</th><th>Title</th><th>Due date</th><th>Fine</th><th>Action</th></tr></thead><tbody>${active.map(l=>`<tr><td>${safe(l.email)}</td><td>${safe(l.title)}</td><td>${l.due}</td><td>₹${fine(l)}</td><td><button class="btn btn-primary" onclick="returnBook(${l.id})">Record return</button></td></tr>`).join("")}</tbody></table></div>`:empty("No active loans");
+  document.getElementById("issueBook").innerHTML='<option value="">Select a title</option>'+books.filter(b=>b.available>0).map(b=>`<option value="${b.id}">${safe(b.title)} (${b.available} available)</option>`).join("");
+  document.getElementById("studentList").innerHTML=users.length?`<div class="table-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Student ID</th></tr></thead><tbody>${users.map(u=>`<tr><td>${safe(u.name)}</td><td>${safe(u.email)}</td><td>${safe(u.studentId)}</td></tr>`).join("")}</tbody></table></div>`:empty("No registered students");
+}
+function editBook(id) {
+  const b=books.find(x=>x.id===id); if(!b)return;
+  const title=prompt("Book title:",b.title); if(title===null)return;
+  const author=prompt("Author:",b.author); if(author===null)return;
+  const raw=prompt("Total copies:",b.total); if(raw===null)return;
+  const total=Number(raw), issued=b.total-b.available;
+  if(!title.trim()||!author.trim()||!Number.isInteger(total)||total<1||total<issued){alert("Please enter valid details. Total copies cannot be less than copies on loan.");return;}
+  b.title=title.trim(); b.author=author.trim(); b.total=total; b.available=total-issued;
+  loans.filter(l=>l.bookId===id&&!l.returned).forEach(l=>l.title=b.title);
+  save();renderAdmin();renderHome();alert("Catalogue entry updated.");
+}
+function deleteBook(id) {
+  const b=books.find(x=>x.id===id); if(!b)return;
+  if(loans.some(l=>l.bookId===id&&!l.returned)){alert("Record all returns before deleting this title.");return;}
+  if(!confirm(`Remove “${b.title}” from the catalogue?`))return;
+  books=books.filter(x=>x.id!==id);save();renderAdmin();renderHome();alert("Title removed.");
+}
+function returnBook(id) {
+  const l=loans.find(x=>x.id===id&&!x.returned); if(!l)return;
+  const amount=fine(l);
+  if(!confirm(`Record the return of “${l.title}”? Current calculated fine: ₹${amount}.`))return;
+  l.returned=true; const b=books.find(x=>x.id===l.bookId); if(b)b.available=Math.min(b.total,b.available+1);
+  save();renderAdmin();renderHome();alert("Return recorded. Calculated fine: ₹"+amount);
+}
+function updateUser(){document.getElementById("userLabel").textContent=currentUser?`Signed in: ${currentUser.name}`:"Guest session";}
+function logout(){currentUser=null;save();updateUser();showPage("home");alert("You have signed out.");}
+document.getElementById("registerForm").addEventListener("submit",function(e){
+  e.preventDefault();
+  const name=document.getElementById("regName").value.trim(), email=document.getElementById("regEmail").value.trim().toLowerCase(), studentId=document.getElementById("regId").value.trim(), password=document.getElementById("regPassword").value;
+  if(users.some(u=>u.email===email||u.studentId.toLowerCase()===studentId.toLowerCase())){alert("That email address or student ID is already registered.");return;}
+  users.push({name,email,studentId,password});currentUser={name,email,studentId};save();this.reset();updateUser();alert("Registration completed.");showPage("profile");
+});
+document.getElementById("loginForm").addEventListener("submit",function(e){
+  e.preventDefault();
+  const email=document.getElementById("loginEmail").value.trim().toLowerCase(), password=document.getElementById("loginPassword").value;
+  const user=users.find(u=>u.email===email&&u.password===password);
+  if(!user){alert("Email or password is incorrect.");return;}
+  currentUser={name:user.name,email:user.email,studentId:user.studentId};save();this.reset();updateUser();alert("You are signed in.");showPage("profile");
+});
+function demoLogin(){
+  const email="demo@student.com";let user=users.find(u=>u.email===email);
+  if(!user){user={name:"Demo Student",email,studentId:"DEMO001",password:"demo123"};users.push(user);}
+  currentUser={name:user.name,email:user.email,studentId:user.studentId};save();updateUser();showPage("profile");alert("Demo student session started.");
+}
+document.getElementById("bookForm").addEventListener("submit",function(e){
+  e.preventDefault();
+  const title=document.getElementById("bookTitle").value.trim(),author=document.getElementById("bookAuthor").value.trim(),category=document.getElementById("bookCategory").value,copies=Number(document.getElementById("bookCopies").value);
+  if(!title||!author||!category||!Number.isInteger(copies)||copies<1){alert("Enter valid book details.");return;}
+  books.push({id:Date.now(),title,author,category,total:copies,available:copies,icon:"▤"});save();this.reset();document.getElementById("bookCopies").value=1;renderAdmin();renderHome();alert("Catalogue title added.");
+});
+document.getElementById("issueForm").addEventListener("submit",function(e){
+  e.preventDefault();
+  const email=document.getElementById("issueEmail").value.trim().toLowerCase(),id=Number(document.getElementById("issueBook").value),u=users.find(x=>x.email===email),b=books.find(x=>x.id===id);
+  if(!u){alert("No registered student matches that email.");return;}
+  if(!b||b.available<1){alert("Select an available title.");return;}
+  if(loans.filter(l=>l.email===email&&!l.returned).length>=3){alert("This student already has three active loans.");return;}
+  const issue=new Date(),due=new Date();due.setDate(due.getDate()+14);
+  loans.push({id:Date.now(),bookId:b.id,title:b.title,email,issue:issue.toISOString().slice(0,10),due:due.toISOString().slice(0,10),returned:false});
+  b.available--;save();this.reset();renderAdmin();renderHome();alert(`Issue recorded. Due date: ${due.toLocaleDateString()}`);
+});
+document.getElementById("materialForm").addEventListener("submit",function(e){
+  e.preventDefault();
+  const title=document.getElementById("materialTitle").value.trim(),year=document.getElementById("materialYear").value,semester=document.getElementById("materialSemester").value,url=document.getElementById("materialUrl").value.trim();
+  if(url){try{if(!["http:","https:"].includes(new URL(url).protocol))throw Error();}catch{alert("Enter a valid HTTP or HTTPS resource link.");return;}}
+  materials.push({id:Date.now(),title,year,semester,url});save();this.reset();renderMaterials();alert("Study resource added.");
+});
+function init(){updateUser();renderHome();renderCatalog();renderMaterials();}
+init();
+</script>
+</body>
+</html>
